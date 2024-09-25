@@ -15,10 +15,10 @@ import java.sql.SQLException;
 public class locadora
 {
 	// 1 - identificar onde que está o arquivo de BD
-	public static String jdbcUrl = "jdbc:sqlite:/C:\\Users\\Gabriel Carrascosa\\eclipse-workspace\\locadoraDeJogos\\locadoraDeJogos.db";
+	public static String jdbcUrl = "jdbc:sqlite:/C:\\Users\\Gabriel Carrascosa\\eclipse-workspace\\Locadora\\locadora-de-jogos\\locadoraDeJogos\\locadoraDeJogos.db";
 	public static String tabelaAtual = "";
 	
-	public static void main(String[] args) 
+	public static void main(String[] args)
 	{
 		try // o java obriga a usar try em banco de dados
 		{ // o main tem que estar assim!
@@ -28,14 +28,15 @@ public class locadora
 			while (variaveis.repetirCodigo)
 			{
 				variaveis.repetirTabela=true;
-				metodosAuxiliares.escolherOpcoesForaDasTabelas(connection);
+				variaveis.opcaoSelectBoolean=false;
+				printar.opcoesForaTabela(connection);
 				
-				while (variaveis.repetirCodigo && variaveis.repetirTabela && variaveis.opcao != "3")
+				while (variaveis.repetirCodigo && variaveis.repetirTabela && !variaveis.opcaoSelectBoolean)
 				{
-					//mostrar o estado inicial do BD
-					metodosAuxiliares.mostrarTabela(connection);
-					metodosAuxiliares.escolherOpcaoDentroDaTabela(connection);
-					metodosAuxiliares.limparTerminal();
+					//mostrar o estado inicial do BD:
+					printar.tabela(connection);
+					//mostrar opções dentro da tabela: inserir, atualizar ou remover dados:
+					printar.opcoesDentroTabela(connection);
 				}
 			}
 			System.out.println("Fim do código");
@@ -49,4 +50,5 @@ public class locadora
 			e1.printStackTrace();
 		}
 	}
+
 }
