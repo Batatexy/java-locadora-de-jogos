@@ -56,43 +56,6 @@ public class printar
 		}
 	}
 	
-	public static void tabela(Connection connection) 
-	{
-		switch (locadora.tabelaAtual)
-		{
-			case "Jogos":
-			{
-				//mostrar.jogos(connection);
-				DALlocadora.select(variaveis.selectJogos);
-				break;
-			}
-			
-			case "Consoles":
-			{
-				//mostrar.consoles(connection);
-				DALlocadora.select(variaveis.selectConsoles);
-				break;
-			}
-			
-			case "Clientes":
-			{
-				//mostrar.consoles(connection);
-				DALlocadora.select(variaveis.selectClientes);
-				break;
-			}
-			
-			case "Funcionários":
-			{
-				//mostrar.consoles(connection);
-				DALlocadora.select(variaveis.selectFuncionarios);
-				break;
-			}
-			
-			default:
-				break;
-		}
-	}
-	
 	public static void opcoesDentroTabela(Connection connection) 
 	{
 		System.out.println("Escolha umas das opções a seguir:");

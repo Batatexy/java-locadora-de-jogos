@@ -12,10 +12,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import src.data.DALlocadora;
+
 public class locadora
 {
 	// 1 - identificar onde que está o arquivo de BD
-	public static String jdbcUrl = "jdbc:sqlite:/C:\\Users\\Gabriel Carrascosa\\eclipse-workspace\\Locadora\\locadora-de-jogos\\locadoraDeJogos\\locadoraDeJogos.db";
+	public static String jdbcUrl = "jdbc:sqlite:/C:\\Users\\Gabriel Carrascosa\\eclipse-workspace\\locadora-de-jogos\\locadoraDeJogos\\locadoraDeJogos.db";
 	public static String tabelaAtual = "";
 	
 	public static void main(String[] args)
@@ -33,8 +35,9 @@ public class locadora
 				
 				while (variaveis.repetirCodigo && variaveis.repetirTabela && !variaveis.opcaoSelectBoolean)
 				{
-					//mostrar o estado inicial do BD:
-					printar.tabela(connection);
+					//mostrar o estado inicial do BD, agora o proprio metodo select, sem ser a opção
+					//selectScanner, consegue verificar qual a tabela está e printa ela:
+					DALlocadora.select();
 					//mostrar opções dentro da tabela: inserir, atualizar ou remover dados:
 					printar.opcoesDentroTabela(connection);
 				}

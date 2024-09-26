@@ -7,31 +7,36 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 
 import src.locadora;
+import src.tabela;
 import src.formatar;
 import src.verificar;
 import src.variaveis;
 
 public class DALlocadora 
 {
-	public static void select(String sql) 
+	public static void select() 
 	{
-		selectMetodo(sql);
+		selectMetodo();
 	}
 
-	public static void select() 
+	public static void selectScanner() 
 	{
 		Scanner scanner = new Scanner(System.in);
 		System.out.println("Digite a consulta SQL: ");
 		String sql = scanner.nextLine();
 
-		selectMetodo(sql);
+		selectMetodo();
 	}
 
-	public static void selectMetodo(String sql)
+	public static void selectMetodo()
 	{
+		String sql = "SELECT * FROM " + locadora.tabelaAtual;
+		
 		try (Connection connection = DriverManager.getConnection(locadora.jdbcUrl);
         Statement statement = connection.createStatement())
         {
@@ -101,9 +106,10 @@ public class DALlocadora
 		{
 			// primeiro, vamos ler o teclado para o usuário informar
 			// quais dados serão inseridos no BD
-			PreparedStatement preparedStatement;
+			//PreparedStatement preparedStatement = null;
 			Scanner scanner = new Scanner(System.in);
 
+			//Verificar 3 IDs livres:
 			verificar.IDLivre(connection, "id");
 
 			System.out.println("Tabela " + locadora.tabelaAtual + ", Digite o ID: (número inteiro): ");
@@ -116,107 +122,39 @@ public class DALlocadora
 				id = scanner.nextInt(); // assim, já retorna um int
 			}
 
-			// quando usamos o next int, o scanner consome apenas o valor
-			// inteiro, mas o buffer do teclado sempre coloca um \n no fim
-			// de cada instrução que é lida do teclado
-			// se a gente ser ler direto, ela vai ficar com o \n
-			// que tava sobrando no buffer
+			// quando usamos o next int, o scanner consome apenas o valor inteiro, mas o buffer do teclado sempre coloca um \n no fim de cada instrução que é lida do teclado, se ler direto, vai ficar com um \n que tava sobrando no buffer
 			scanner.nextLine(); // para poder consumir o \n e limpar o buffer
 
 			if (id != 0) 
 			{
-				// Switch para mudar pro banco certo
+				// Switch para mudar pra tabela certa
 				switch (locadora.tabelaAtual) 
 				{
 					case "Jogos": 
 					{
-						System.out.println("Digite o nome do jogo: ");
-						String nome = scanner.nextLine(); // que é usado pra ler string
-	
-						System.out.println("Digite o desenvolvedor do jogo: ");
-						String desenvolvedor = scanner.nextLine();
-	
-						System.out.println("Digite a distribuidora do jogo: ");
-						String distribuidora = scanner.nextLine();
-	
-						System.out.println("Digite o genero do jogo: ");
-						String genero = scanner.nextLine();
-	
-						System.out.println("Digite o ano de publicacao do jogo: ");
-						int ano = scanner.nextInt();
-	
-						System.out.println("Digite o console do jogo: ");
-						int console = scanner.nextInt();
-	
-						// depois, é necessário fazer a
-						// definição da query sql de inserção de dados
-						String sql = " INSERT INTO " + locadora.tabelaAtual + 
-						" (id, nome, desenvolvedor, distribuidora,, genero, ano, console) " + 
+						// depois, é necessário fazer a definição da query sql de inserção de dados
+						String sql = "INSERT INTO " + locadora.tabelaAtual + 
+						" (id, nome, desenvolvedor, distribuidora, genero, ano, console) " + 
 						" VALUES (?, ?, ?, ?, ?, ?, ?)";
-	
-						// após, fazer a inicialização do objeto que permite criar
-						// queries com parâmetros
-						preparedStatement = connection.prepareStatement(sql);
-	
-						// por fim, fazer o preenchimento dos parâmetros
-						preparedStatement.setInt(1, id);
-						preparedStatement.setString(2, nome);
-						preparedStatement.setString(3, desenvolvedor);
-						preparedStatement.setString(4, distribuidora);
-						preparedStatement.setString(5, genero);
-						preparedStatement.setInt(6, ano);
-						preparedStatement.setInt(7, console);
-	
+						
+						tabela.jogos(connection, sql, id);
+						
 						break;
 					}
 					case "Consoles": 
 					{
-						System.out.println("Digite o título do console: ");
-						String nome = scanner.nextLine(); // que é usado pra ler string
-	
-						System.out.println("Digite o fabricante do console: ");
-						String fabricante = scanner.nextLine();
-	
-						System.out.println("Digite a geração do console: ");
-						int geracao = scanner.nextInt();
-	
-						System.out.println("Digite o ano de lançamento do console: ");
-						int ano = scanner.nextInt();
-	
-						// depois, é necessário fazer a
-						// definição da query sql de inserção de dados
-						String sql = " INSERT INTO " + locadora.tabelaAtual + " " + " (id, nome, fabricante, geracao, ano) "
-								+ " VALUES (?, ?, ?, ?, ?)";
-	
-						// após, fazer a inicialização do objeto que permite criar
-						// queries com parâmetros
-						preparedStatement = connection.prepareStatement(sql);
-	
-						// por fim, fazer o preenchimento dos parâmetros
-						preparedStatement.setInt(1, id);
-						preparedStatement.setString(2, nome);
-						preparedStatement.setString(3, fabricante);
-						preparedStatement.setInt(4, geracao);
-						preparedStatement.setInt(5, ano);
+						String sql = "INSERT INTO " + locadora.tabelaAtual + 
+						" (id, nome, fabricante, geracao, ano) " +
+						" VALUES (?, ?, ?, ?, ?)";
+						
+						tabela.consoles(connection, sql, id);
 	
 						break;
 					}
 					
 					default:
-					{
-						preparedStatement = connection.prepareStatement("");
 						break;
-					}
-				}
-
-				// agora, só falta executar a query sql
-				if (preparedStatement.executeUpdate() > 0) 
-				{
-					System.out.println("\nInserção efetuada com sucesso!\n");
-				} 
-				else 
-				{
-					System.out.println("\nNenhuma linha do BD foi afetada");
+					
 				}
 			}
 		} 
@@ -229,6 +167,8 @@ public class DALlocadora
 			System.out.println("Erro genérico: " + e1.getMessage() + "/n");
 		}
 	}
+	
+	
 
 	// um método para editar dados do BD
 	public static void atualizarDados(Connection connection) 
@@ -236,9 +176,16 @@ public class DALlocadora
 		try 
 		{
 			Scanner scanner = new Scanner(System.in);
-
+			
+			PreparedStatement preparedStatement = null;
+			
 			// Remover o s do final dos nomes das tabelas
 			String tabelaModificada = locadora.tabelaAtual.substring(0, locadora.tabelaAtual.length() - 1);
+			System.out.println("Escolha uma das opções abaixo:");
+			System.out.println("1. Alterar uma coluna de um dado em " + tabelaModificada);
+			System.out.println("2. ALterar todas as colunas de um dado em " + tabelaModificada);
+			int opcao = scanner.nextInt();
+			
 			System.out.print("Digite o ID do " + tabelaModificada + " que deseja atualizar: ");
 			int id = scanner.nextInt();
 
@@ -253,39 +200,79 @@ public class DALlocadora
 
 			if (id != 0) 
 			{
-				// Digitalização da Coluna
-				System.out.print("Digite o nome da coluna que deseja alterar: ");
-				String coluna = scanner.nextLine();
+				if (opcao == 1)
+				{
+					// Digitalização da Coluna
+					System.out.print("Digite o nome da coluna que deseja alterar: ");
+					String coluna = scanner.nextLine();
+					
+					// Digitalização do novo Valor
+					System.out.print("Digite o novo valor: ");
+					String valor = scanner.nextLine();
 
-				// Amplificar o metodo para permitir que sejam alteradas mais de 1 coluna
+					String sql = "UPDATE " + locadora.tabelaAtual + " SET " + coluna + " = ? WHERE id = ?";
+					System.out.print("\n");
 
-				// Digitalização do novo Valor
-				System.out.print("Digite o novo valor: ");
-				String valor = scanner.nextLine();
+					// Caso a coluna seja o Proprio ID, Verificar se já pertence a algum outro dado
+					if (valor == "id") {
+						if (verificar.validarID(connection, id)) 
+						{
+							System.out.print("Este ID já existe!");
+						}
+					}
 
-				String sql = "UPDATE " + locadora.tabelaAtual + " SET " + coluna + " = ? WHERE id = ?";
-				System.out.print("\n");
-
-				// Caso a coluna seja o Proprio ID, Verificar se já pertence a algum outro dado
-				if (valor == "id") {
-					if (verificar.validarID(connection, id)) 
+					// Alteração de dados
+					preparedStatement = connection.prepareStatement(sql);
+					preparedStatement.setString(1, valor);
+					preparedStatement.setInt(2, id);
+				}
+				else if (opcao == 2)
+				{
+					// Switch para mudar pra tabela certa
+					switch (locadora.tabelaAtual) 
 					{
-						System.out.print("Este ID já existe!");
+						case "Jogos": 
+						{
+							// depois, é necessário fazer a
+							// definição da query sql de inserção de dados
+							String sql = "UPDATE " + locadora.tabelaAtual + " SET " +
+							"id = ?, nome = ?, desenvolvedor = ?, distribuidora = ?, genero = ? " + 
+							"ano = ?, console = ? WHERE id = " + id +
+							" VALUES (?, ?, ?, ?, ?, ?, ?)";
+							
+							tabela.jogos(connection, sql, id);
+							
+							break;
+						}
+						case "Consoles": 
+						{
+							String sql = " UPDATE SET " + locadora.tabelaAtual + 
+							" (id, nome, fabricante, geracao, ano) " +
+							" VALUES (?, ?, ?, ?, ?)";
+							
+							tabela.consoles(connection, sql, id);
+		
+							break;
+						}
+						
+						default:
+						{
+							preparedStatement = connection.prepareStatement("");
+							break;
+						}
 					}
 				}
 
-				// Alteração de dados
-				PreparedStatement prepareStatement = connection.prepareStatement(sql);
-				prepareStatement.setString(1, valor);
-				prepareStatement.setInt(2, id);
-
-				if (prepareStatement.executeUpdate() > 0) 
+				if (opcao==1 || opcao==2)
 				{
-					System.out.print("Registro atualizado com sucesso!");
-				} 
-				else 
-				{
-					System.out.print("Nenhum registro atualizado");
+					if (preparedStatement.executeUpdate() > 0) 
+					{
+						System.out.print("Registro atualizado com sucesso!");
+					} 
+					else 
+					{
+						System.out.print("Nenhum registro atualizado");
+					}
 				}
 			}
 		} 
@@ -316,27 +303,30 @@ public class DALlocadora
 
 			if (id != 0) 
 			{
-				System.out.print("Tem certeza que deseja EXCLUIR o dado de ID: " + id + "? (Sim / Não)");
-				String resposta = scanner.nextLine();
-				resposta.toLowerCase();
+				// Obter um numero entre 1000 e 9999 como verificação
+				int numeroAleatorio = ThreadLocalRandom.current().nextInt(1000, 9999);
+				System.out.print("Digite o número a seguir para excluir o dado: " + numeroAleatorio + ":") ;
+				
+				int resposta = scanner.nextInt();
+				scanner.nextLine();
 
-				System.out.println(resposta);
-
-				if (resposta == "sim" || resposta == "s") {
+				if (resposta == numeroAleatorio) 
+				{
 					PreparedStatement preparedStatement = connection.prepareStatement(sql);
 					preparedStatement.setInt(1, id);
 
 					if (preparedStatement.executeUpdate() > 0) 
 					{
-						System.out.println("Registro deletado com sucesso!");
-					} else 
+						System.out.println("Registro deletado");
+					} 
+					else 
 					{
 						System.out.println("Nenhum registro alterado");
 					}
-				} 
+				}
 				else 
 				{
-					System.out.println("Nenhum registro deletado");
+					System.out.println("Nenhum registro alterado");
 				}
 			}
 		} 
