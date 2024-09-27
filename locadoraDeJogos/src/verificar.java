@@ -1,6 +1,7 @@
 package src;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -24,26 +25,38 @@ public class verificar
 		return tamanho;
 	}
 	
-	public static boolean Verificador(Connection connection, String verificador) throws SQLException
-	{
-		Statement statement = connection.createStatement();
-		ResultSet resultado = statement.executeQuery(verificador);
-	
-		if (resultado.next())
-			return true;
-		else
-			return false;
-	}
-
 	//Metodo que verifica se um ID existe
-	public static boolean validarID(Connection connection, int id) throws SQLException
+	public static boolean validarID(Connection connection, int id)
 	{
 		String verificador = "SELECT true FROM " + locadora.tabelaAtual + " WHERE id = " + id;
-		return Verificador(connection, verificador);
+		
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try 
+		{
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery(verificador);
+			
+			if (resultSet.next())
+				return true;
+			else
+				return false;
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			fechar(statement);
+			fechar(resultSet);
+		}
+		
+		return true;
 	}
 	
 	//Metodo que verifica se um ID existe
-	public static void IDLivre(Connection connection, String coluna) throws SQLException
+	public static void IDLivres(Connection connection, String coluna) throws SQLException
 	{
 		ArrayList<Integer> ids = new ArrayList<>(Arrays.asList(0, 0, 0, 0));
 		String idsString = "";
@@ -52,7 +65,7 @@ public class verificar
         {
         	ids.set(i, ids.get(i-1) + 1);
         	
-    		while (validarID(connection, ids.get(i))) 
+    		while (validarID(connection, ids.get(i)))
     		{
     			ids.set(i, ids.get(i) + 1);
     		}
@@ -60,6 +73,69 @@ public class verificar
     		idsString += ids.get(i) + ", ";
         }
         
-		System.out.println("IDs Livres: " + idsString);
+        // Remover a "," do final
+     	String idModificado = idsString.substring(0, idsString.length() - 2);
+		System.out.println("IDs Livres: " + idModificado);
 	}
+	
+	public static void fechar(Connection connection)
+	{
+	    if (connection != null) 
+	    {
+	        try 
+	        {
+	            connection.close();
+	        } 
+	        catch (SQLException e) 
+	        {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
+	public static void fechar(ResultSet resultSet)
+	{
+	    if (resultSet != null) 
+	    {
+	        try 
+	        {
+	        	resultSet.close();
+	        } 
+	        catch (SQLException e) 
+	        {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
+	public static void fechar(PreparedStatement preparedStatement)
+	{
+	    if (preparedStatement != null) 
+	    {
+	        try 
+	        {
+	        	preparedStatement.close();
+	        } 
+	        catch (SQLException e) 
+	        {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
+	public static void fechar(Statement statement)
+	{
+	    if (statement != null) 
+	    {
+	        try 
+	        {
+	        	statement.close();
+	        } 
+	        catch (SQLException e) 
+	        {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+	
 }

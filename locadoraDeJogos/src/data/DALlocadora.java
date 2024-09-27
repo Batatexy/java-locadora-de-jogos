@@ -21,7 +21,8 @@ public class DALlocadora
 {
 	public static void select() 
 	{
-		selectMetodo();
+		String sql = "SELECT * FROM " + locadora.tabelaAtual;
+		selectMetodo(sql);
 	}
 
 	public static void selectScanner() 
@@ -30,18 +31,16 @@ public class DALlocadora
 		System.out.println("Digite a consulta SQL: ");
 		String sql = scanner.nextLine();
 
-		selectMetodo();
+		selectMetodo(sql);
 	}
 
-	public static void selectMetodo()
+	public static void selectMetodo(String sql)
 	{
-		String sql = "SELECT * FROM " + locadora.tabelaAtual;
-		
 		try (Connection connection = DriverManager.getConnection(locadora.jdbcUrl);
         Statement statement = connection.createStatement())
         {
            //Executa a consulta
-           ResultSet resultSet = statement.executeQuery(sql);
+		   ResultSet resultSet = statement.executeQuery(sql);
 
            //Obtém os metadados da quantidade de colunas da tabela
            int columnCount = resultSet.getMetaData().getColumnCount();
@@ -49,6 +48,7 @@ public class DALlocadora
            int[] tamanhoColunas = new int[variaveis.valor];
            String[] nomeColunasArray = new String[variaveis.valor];
            
+           //Guardar o tamanho de cada coluna em um Array
            while (resultSet.next()) 
            {
                for (int i = 1; i <= columnCount; i++) 
@@ -66,6 +66,17 @@ public class DALlocadora
 	        	   nomeColunasArray[i] = nomeColuna;
                }
            }
+           
+           int tamanhoLinha=-2;
+           
+           //Definir tamanho da Linha superior e inferior da tabela:
+           for (int i = 1; i <= columnCount; i++) 
+           {
+        	   tamanhoLinha += tamanhoColunas[i] + 3;
+           }
+           
+           //Printar Linha Superior:
+           System.out.println(formatar.criarLinha(variaveis.linhaCima, tamanhoLinha));
            
            //Printar Cabeçalho:
            for (int i = 1; i <= columnCount; i++) 
@@ -91,8 +102,12 @@ public class DALlocadora
         	   tamanhoColunas[i] = 0;
            }
            
-           System.out.println(formatar.criarLinha(variaveis.linhaBaixo, 100, 1));
-        } 
+         //Printar Linha Inferior:
+           System.out.println(formatar.criarLinha(variaveis.linhaBaixo, tamanhoLinha));
+           
+           statement.close();
+           resultSet.close();
+        }
         catch (Exception e)
         {
         	e.printStackTrace();
@@ -110,8 +125,8 @@ public class DALlocadora
 			Scanner scanner = new Scanner(System.in);
 
 			//Verificar 3 IDs livres:
-			verificar.IDLivre(connection, "id");
-
+			verificar.IDLivres(connection, "id");
+			
 			System.out.println("Tabela " + locadora.tabelaAtual + ", Digite o ID: (número inteiro): ");
 			// String id = scanner.nextLine(); //isso retorna uma string
 			int id = scanner.nextInt(); // assim, já retorna um int
@@ -133,51 +148,53 @@ public class DALlocadora
 					case "Jogos": 
 					{
 						// depois, é necessário fazer a definição da query sql de inserção de dados
-						String sql = "INSERT INTO " + locadora.tabelaAtual + 
-						" (id, nome, desenvolvedor, distribuidora, genero, ano, console) " + 
-						" VALUES (?, ?, ?, ?, ?, ?, ?)";
+						String sql = "INSERT INTO jogos " + 
+						"(id, nome, desenvolvedor, distribuidora, genero, ano, console) " + 
+						"VALUES (?, ?, ?, ?, ?, ?, ?)";
 						
-						tabela.jogos(connection, sql, id);
+						tabela.jogos(connection, sql, id, false);
 						
 						break;
 					}
 					case "Consoles": 
 					{
-						String sql = "INSERT INTO " + locadora.tabelaAtual + 
-						" (id, nome, fabricante, geracao, ano) " +
-						" VALUES (?, ?, ?, ?, ?)";
+						String sql = "INSERT INTO consoles " +
+						"(id, nome, fabricante, geracao, ano) " +
+						"VALUES (?, ?, ?, ?, ?)";
 						
-						tabela.consoles(connection, sql, id);
+						tabela.consoles(connection, sql, id, false);
 	
 						break;
 					}
 					
 					default:
 						break;
-					
 				}
 			}
-		} 
+		}
 		catch (SQLException e) 
 		{
 			System.out.println("Erro de SQL: " + e.getMessage() + "/n");
+			
 		} 
 		catch (Exception e1) 
 		{
 			System.out.println("Erro genérico: " + e1.getMessage() + "/n");
 		}
+		finally
+		{
+			
+		}
 	}
 	
-	
-
 	// um método para editar dados do BD
 	public static void atualizarDados(Connection connection) 
 	{
+		PreparedStatement preparedStatement = null;
+		
 		try 
 		{
 			Scanner scanner = new Scanner(System.in);
-			
-			PreparedStatement preparedStatement = null;
 			
 			// Remover o s do final dos nomes das tabelas
 			String tabelaModificada = locadora.tabelaAtual.substring(0, locadora.tabelaAtual.length() - 1);
@@ -186,7 +203,7 @@ public class DALlocadora
 			System.out.println("2. ALterar todas as colunas de um dado em " + tabelaModificada);
 			int opcao = scanner.nextInt();
 			
-			System.out.print("Digite o ID do " + tabelaModificada + " que deseja atualizar: ");
+			System.out.println("Digite o ID do " + tabelaModificada + " que deseja atualizar: ");
 			int id = scanner.nextInt();
 
 			// 5 - executar o SQL
@@ -202,94 +219,110 @@ public class DALlocadora
 			{
 				if (opcao == 1)
 				{
-					// Digitalização da Coluna
-					System.out.print("Digite o nome da coluna que deseja alterar: ");
+					//Digitalização da Coluna
+					System.out.println("Digite o nome da coluna que deseja alterar: ");
 					String coluna = scanner.nextLine();
 					
-					// Digitalização do novo Valor
-					System.out.print("Digite o novo valor: ");
+					//Digitalização do novo Valor
+					System.out.println("Digite o novo valor: ");
 					String valor = scanner.nextLine();
 
 					String sql = "UPDATE " + locadora.tabelaAtual + " SET " + coluna + " = ? WHERE id = ?";
-					System.out.print("\n");
 
-					// Caso a coluna seja o Proprio ID, Verificar se já pertence a algum outro dado
-					if (valor == "id") {
+					//Caso a coluna seja o Proprio ID, Verificar se já pertence a algum outro dado
+					if (valor == "id") 
+					{
 						if (verificar.validarID(connection, id)) 
 						{
-							System.out.print("Este ID já existe!");
+							System.out.println("Este ID já existe!");
+							return;
 						}
 					}
-
-					// Alteração de dados
+					
+					//Alteração de dados
 					preparedStatement = connection.prepareStatement(sql);
 					preparedStatement.setString(1, valor);
 					preparedStatement.setInt(2, id);
+					
+					//agora, só falta executar a query sql
+					if (preparedStatement.executeUpdate() > 0) 
+					{
+						System.out.println("Atualização efetuada com sucesso!");
+					}
+					else 
+					{
+						System.out.println("Nenhuma linha do BD foi afetada");
+					}
 				}
 				else if (opcao == 2)
 				{
-					// Switch para mudar pra tabela certa
+					//Switch para mudar pra tabela certa
 					switch (locadora.tabelaAtual) 
 					{
 						case "Jogos": 
-						{
-							// depois, é necessário fazer a
-							// definição da query sql de inserção de dados
-							String sql = "UPDATE " + locadora.tabelaAtual + " SET " +
-							"id = ?, nome = ?, desenvolvedor = ?, distribuidora = ?, genero = ? " + 
-							"ano = ?, console = ? WHERE id = " + id +
-							" VALUES (?, ?, ?, ?, ?, ?, ?)";
+						{					
+							String sql = "UPDATE jogos SET " +
+									"id = ?, " +
+									"nome = ?, " +
+									"desenvolvedor = ?, " +
+									"distribuidora = ?, " + 
+									"genero = ?, " +
+									"ano = ?, " +
+									"console = ? " + 
+									"WHERE id = " + id;
 							
-							tabela.jogos(connection, sql, id);
+							tabela.jogos(connection, sql, id, true);
 							
 							break;
 						}
 						case "Consoles": 
 						{
-							String sql = " UPDATE SET " + locadora.tabelaAtual + 
-							" (id, nome, fabricante, geracao, ano) " +
-							" VALUES (?, ?, ?, ?, ?)";
+							String sql = "UPDATE consoles SET " +
+									"id = ?, " +
+									"nome = ?, " +
+									"fabricante = ?, " +
+									"geracao = ?, " + 
+									"ano = ? " +
+									"WHERE id = " + id;
 							
-							tabela.consoles(connection, sql, id);
+							tabela.consoles(connection, sql, id, true);
 		
 							break;
 						}
 						
 						default:
 						{
-							preparedStatement = connection.prepareStatement("");
+							//preparedStatement = connection.prepareStatement("");
 							break;
 						}
+						
 					}
+					
 				}
-
-				if (opcao==1 || opcao==2)
-				{
-					if (preparedStatement.executeUpdate() > 0) 
-					{
-						System.out.print("Registro atualizado com sucesso!");
-					} 
-					else 
-					{
-						System.out.print("Nenhum registro atualizado");
-					}
-				}
+				
 			}
-		} 
+		}
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
+			
+		}
+		finally
+		{
+			verificar.fechar(preparedStatement);
 		}
 	}
 
-	// um método para deletar dados do BD
+	//um método para deletar dados do BD
 	public static void deletarDados(Connection connection) 
 	{
 		Scanner scanner = new Scanner(System.in);
 		String sql = "DELETE FROM " + locadora.tabelaAtual + " WHERE id = ?";
 
-		System.out.print("\nInforme o ID que deseja deletar da tabela " + locadora.tabelaAtual + ": ");
+		System.out.println("\nInforme o ID que deseja deletar da tabela " + locadora.tabelaAtual + ": ");
 		int id = scanner.nextInt();
+		
+		PreparedStatement preparedStatement = null;
 
 		try 
 		{
@@ -303,36 +336,40 @@ public class DALlocadora
 
 			if (id != 0) 
 			{
-				// Obter um numero entre 1000 e 9999 como verificação
+				//Obter um numero entre 1000 e 9999 como verificação
 				int numeroAleatorio = ThreadLocalRandom.current().nextInt(1000, 9999);
-				System.out.print("Digite o número a seguir para excluir o dado: " + numeroAleatorio + ":") ;
+				System.out.print("Para EXCLUIR o dado " + id + ", digite o número a seguir " + numeroAleatorio + ":") ;
 				
 				int resposta = scanner.nextInt();
 				scanner.nextLine();
-
+				
 				if (resposta == numeroAleatorio) 
 				{
-					PreparedStatement preparedStatement = connection.prepareStatement(sql);
+					preparedStatement = connection.prepareStatement(sql);
 					preparedStatement.setInt(1, id);
 
 					if (preparedStatement.executeUpdate() > 0) 
 					{
 						System.out.println("Registro deletado");
 					} 
-					else 
+					else
 					{
 						System.out.println("Nenhum registro alterado");
 					}
 				}
-				else 
+				else
 				{
 					System.out.println("Nenhum registro alterado");
 				}
 			}
-		} 
-		catch (SQLException e) 
+		}
+		catch (SQLException e)
 		{
-			System.out.print("Erro ao deletar registro" + id + "/n");
+			System.out.println("Erro ao deletar registro: " + id);
+		}
+		finally
+		{
+			verificar.fechar(preparedStatement);
 		}
 	}
 }

@@ -22,10 +22,12 @@ public class locadora
 	
 	public static void main(String[] args)
 	{
+		Connection connection = null;
+		
 		try // o java obriga a usar try em banco de dados
 		{ // o main tem que estar assim!
 			// 2 - conectar com o BD
-			Connection connection = DriverManager.getConnection(jdbcUrl);
+			connection = DriverManager.getConnection(jdbcUrl);
 
 			while (variaveis.repetirCodigo)
 			{
@@ -43,6 +45,8 @@ public class locadora
 				}
 			}
 			System.out.println("Fim do código");
+			
+			connection.close();
 		}
 		catch (SQLException e) 
 		{
@@ -51,6 +55,10 @@ public class locadora
 		catch (Exception e1) 
 		{
 			e1.printStackTrace();
+		}
+		finally
+		{
+			verificar.fechar(connection);
 		}
 	}
 

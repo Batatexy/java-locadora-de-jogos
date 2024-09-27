@@ -43,8 +43,7 @@ public class printar
 			{
 				//mudar tabela para jogos
 				variaveis.opcaoSelectBoolean=true;
-				DALlocadora.select();
-				//DALlocadora.select(variaveis.selectJogos);
+				DALlocadora.selectScanner();
 				break;
 			}
 			

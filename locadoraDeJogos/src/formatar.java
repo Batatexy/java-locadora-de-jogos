@@ -2,7 +2,7 @@ package src;
 
 public class formatar
 {
-	public static String espaco, caracter = " │ ", caracterCenter = "│ ";
+	public static String texto;
 	
 	public static String alterarNomes(String nomeColuna) 
 	{
@@ -52,10 +52,10 @@ public class formatar
  	   return nomeColuna;
 	}
 	
-	public static String gerarEspacos(String nome, int tamanhoIndividual, String alinhamento) 
+	public static String gerarEspacos(String nome, int maiorTamanho, String alinhamento) 
 	{
-		int tamanhoLength = nome.length();
-		int tamanho = tamanhoIndividual - tamanhoLength;
+		int tamanhoNome = nome.length();
+		int tamanhoRestante = maiorTamanho - tamanhoNome;
 		int soma=0;
 		
 		switch (alinhamento)
@@ -63,66 +63,65 @@ public class formatar
 			case "left":
 			{
 				//Ele coloca o nome, depois soma " " repetidas vezes até chegar no fim da coluna
-				espaco = nome;
-				for (int i=0; i<tamanho;i++)
+				texto = " " + nome;
+				for (int i=0; i<tamanhoRestante;i++)
 				{
-					espaco += " ";
+					texto += " ";
 				}
-				espaco += caracter;
+				texto += " " + variaveis.caracterVertical;
 				break;
 			}
 			
 			case "center":
 			{
-				espaco = " ";
+				texto = " ";
 				
 				//Verificar se é impar, pois na divisão de 2, ficaria sobrando um espaço
-				if (tamanho % 2 != 0)
+				if (tamanhoRestante % 2 != 0)
 					soma = 1;
 					
 				//Mesmo sistema de somar " ", porem, faz metade, adiciona o nome e soma o resto
-				for (int i=0; i<tamanho/2;i++)
+				for (int i=0; i<tamanhoRestante/2 ;i++)
 				{
-					espaco += " ";
+					texto += " ";
 				}
 				
-				espaco+=nome;
+				texto+=nome;
 				
-				for (int i=0; i<tamanho/2 + soma;i++)
+				for (int i=0; i<tamanhoRestante/2 + soma;i++)
 				{
-					espaco += " ";
+					texto += " ";
 				}
-				espaco += caracterCenter;
+				texto += " " + variaveis.caracterVertical;
 				break;
 			}
 			
 			case "right":
 			{
 				//Funciona igual o left, porem ao contrario, ele poem os " " e depois o nome
-				espaco = "";
-				for (int i=0; i<tamanho;i++)
+				texto = " ";
+				for (int i=0; i<tamanhoRestante;i++)
 				{
-					espaco += " ";
+					texto += " ";
 				}
 				
-				espaco += nome +  caracter;
+				texto += nome + " " + variaveis.caracterVertical;
 				break;
 			}
 			
 			default:
-				espaco = "";
+				texto = "";
 				break;
 		}
 		
-		return espaco;
+		return texto;
 	}
 	
-	public static String criarLinha(String texto, int soma, int colunas) 
+	public static String criarLinha(String texto, int tamanho) 
 	{
 		String linha = texto;
-		int mult = (int) (2.5 * colunas);
 		
-		for (int i=0; i<soma + mult;i++)
+		for (int i=0; i<tamanho;i++)
 		{
 			linha += texto;
 		}
