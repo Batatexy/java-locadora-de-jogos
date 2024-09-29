@@ -39,7 +39,8 @@ public class locadora
 				{
 					//mostrar o estado inicial do BD, agora o proprio metodo select, sem ser a opção
 					//selectScanner, consegue verificar qual a tabela está e printa ela:
-					DALlocadora.select();
+					String sql = "SELECT * FROM " + locadora.tabelaAtual;
+					DALlocadora.select(sql);
 					//mostrar opções dentro da tabela: inserir, atualizar ou remover dados:
 					printar.opcoesDentroTabela(connection);
 				}

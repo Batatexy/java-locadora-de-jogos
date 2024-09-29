@@ -48,6 +48,9 @@ public class tabela
 			System.out.println("Digite o console do jogo: ");
 			int console = scanner.nextInt();
 			
+			System.out.println("Digite a unidade do jogo: ");
+			int unidade = scanner.nextInt();
+			
 			// após, fazer a inicialização do objeto que permite criar querys com parâmetros
 			preparedStatement = connection.prepareStatement(sql);
 	
@@ -59,6 +62,7 @@ public class tabela
 			preparedStatement.setString(5, genero);
 			preparedStatement.setInt(6, ano);
 			preparedStatement.setInt(7, console);
+			preparedStatement.setInt(8, unidade);
 			
 			// agora, só falta executar a query sql
 			if (preparedStatement.executeUpdate() > 0) 
