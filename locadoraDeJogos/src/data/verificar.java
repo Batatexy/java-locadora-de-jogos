@@ -1,12 +1,15 @@
-package src;
+package src.data;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import src.locadora;
 
 public class verificar 
 {
@@ -23,6 +26,50 @@ public class verificar
 			return intNomeColuna;
 		
 		return tamanho;
+	}
+	
+	//Metodo que verifica se um ID existe
+	public static boolean validarUnidadeJogos(int id)
+	{
+		PreparedStatement preparedStatement = null;
+		int soma = 0;
+		
+		//Buscar o id especifico em tabela
+		String sql = "SELECT * FROM jogos where id = " + id;
+		
+		try (Connection connection = DriverManager.getConnection(locadora.jdbcUrl);
+		Statement statement = connection.createStatement())
+        {
+            //Executa a consulta
+		    ResultSet resultSet = statement.executeQuery(sql);
+		    
+		    //Valor de unidades:
+		    int numero = resultSet.getInt(7);
+		    
+		    //Nome do item
+		    String nome = resultSet.getString(2);
+		    
+		    if (numero<=0)
+		    {
+		    	System.out.println("Não há mais unidades de " + nome);
+		    	verificar.fechar(resultSet);
+		    	return false;
+		    }
+		    else
+		    {
+		    	verificar.fechar(resultSet);
+		    	return true;
+		    }
+        }
+		catch (Exception e)
+        {
+        	e.printStackTrace();
+        }
+		finally
+		{
+			verificar.fechar(preparedStatement);
+		}
+		return false;
 	}
 	
 	//Metodo que verifica se um ID existe

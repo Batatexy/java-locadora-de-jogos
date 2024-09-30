@@ -1,4 +1,4 @@
-package src;
+package classesAuxiliares;
 
 public class formatar
 {
@@ -12,6 +12,12 @@ public class formatar
 	   	   	case "id":
 	   	    {
 	   	    	nomeColuna = "ID";
+	   	    	break;
+	   	    }
+	   	    
+	   	   	case "cpf":
+	   	    {
+	   	    	nomeColuna = "CPF";
 	   	    	break;
 	   	    }
    	    
@@ -117,14 +123,53 @@ public class formatar
 		return texto;
 	}
 	
-	public static String criarLinha(String texto, int tamanho) 
+	public static void criarLinha(int posicao, int[] tamanhoColunas, int columnCount) 
 	{
-		String linha = texto;
+		String linha="";
+        int tamanhoLinha=-2;
+        
+        //Definir tamanho da Linha superior e inferior da tabela:
+        for (int i = 1; i <= columnCount; i++)
+        {
+    		for (int j=0; j<tamanhoColunas[i]+2;j++)
+    		{
+    			if (posicao == 4)
+    				linha += " ";
+    			else
+    				linha += variaveis.linha;
+    		}
+    		
+    		if (i == columnCount)
+    		{
+	    		if (posicao == 1)
+					linha+="┐";
+	    		else if (posicao == 2)
+					linha+="┤";
+				else if (posicao == 3)
+					linha+="┘";
+				else if (posicao == 4)
+					linha+=variaveis.caracterVertical;
+    		}
+    		else
+    		{
+	    		if (posicao == 1)
+					linha+="┬";
+	    		else if (posicao == 2)
+					linha+="┼";
+				else if (posicao == 3)
+					linha+="┴";
+				else if (posicao == 4)
+					linha+=variaveis.caracterVertical;
+    		}
+    		
+        }
+
+        
+        System.out.println(linha);
+        
 		
-		for (int i=0; i<tamanho;i++)
-		{
-			linha += texto;
-		}
-		return linha;
+
+		
 	}
+
 }

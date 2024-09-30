@@ -1,8 +1,9 @@
-package src;
+package classesAuxiliares;
 
 import java.sql.Connection;
 import java.util.Scanner;
 
+import src.locadora;
 import src.data.DALlocadora;
 
 public class printar 
@@ -18,44 +19,44 @@ public class printar
 		System.out.println("5. Alugueis");
 		
 		//Alterar pra quando tiver mais tabelas, esta deve ser a ultima opção
-		System.out.println("9. Consultas SQL");
+		System.out.println("6. Consultas SQL");
 		
 		Scanner scanner = new Scanner(System.in);
-		variaveis.opcao = scanner.nextLine(); // que é usado pra ler string
+		variaveis.opcaoTabela = scanner.nextInt(); // que é usado pra ler string
 		
 		//a partir daqui, apenas as chamadas
 		// das funções de banco de dados
-		switch (variaveis.opcao)
+		switch (variaveis.opcaoTabela)
 		{
-			case "1":
+			case 1:
 			{
 				//mudar tabela para Jogos
 				locadora.tabelaAtual = "Jogos";
 				break;
 			}
 			
-			case "2":
+			case 2:
 			{
 				//mudar tabela para Consoles
 				locadora.tabelaAtual = "Consoles";
 				break;
 			}
 			
-			case "3":
+			case 3:
 			{
 				//mudar tabela para Clientes
 				locadora.tabelaAtual = "Clientes";
 				break;
 			}
 			
-			case "4":
+			case 4:
 			{
 				//mudar tabela para Funcionarios
 				locadora.tabelaAtual = "Funcionarios";
 				break;
 			}
 			
-			case "5":
+			case 5:
 			{
 				//mudar tabela para Alugueis
 				locadora.tabelaAtual = "Alugueis";
@@ -63,7 +64,7 @@ public class printar
 			}
 			
 			//Alterar pra quando tiver mais tabelas, esta deve ser a ultima opção
-			case "9":
+			case 6:
 			{
 				variaveis.opcaoSelectBoolean=true;
 				DALlocadora.selectScanner();
@@ -87,64 +88,48 @@ public class printar
 		System.out.println("3. Remover em " + locadora.tabelaAtual);
 		System.out.println("4. Select Comparativo");
 		System.out.println("5. Select InnerJoin");
-		System.out.println("6. Remover 1 Unidade em Id 6");
-		System.out.println("7. Adicionar 1 Unidade em Id 6");
 		
 		Scanner scanner = new Scanner(System.in);
-		String opcao = scanner.nextLine(); // que é usado pra ler string
+		variaveis.opcaoDentroTabela = scanner.nextInt(); // que é usado pra ler string
 		
 		//a partir daqui, apenas as chamadas
 		// das funções de banco de dados
-		switch (opcao)
+		switch (variaveis.opcaoDentroTabela)
 		{
-			case "1":
+			case 1:
 			{
 				//inserir um dado novo
 				DALlocadora.inserirDado(connection);
 				break;
 			}
 				
-			case "2":
+			case 2:
 			{
 				//alterar dados
 				DALlocadora.atualizarDados(connection);
 				break;
 			}
 				
-			case "3":
+			case 3:
 			{
 				//deletar um dado pelo ID
 				DALlocadora.deletarDados(connection);
 				break;
 			}
 			
-			case "4":
+			case 4:
 			{
-				opcoesDentroDentroTabela(opcao);
+				while (variaveis.opcoesComparativo!=0)
+					opcoesDentroDentroTabela();
 				break;
 			}
 			
-			case "5":
+			case 5:
 			{
-
-				opcoesDentroDentroTabela(opcao);
+				while (variaveis.opcoesComparativo!=0)
+					opcoesDentroDentroTabela();
 				break;
 			}
-			
-			case "6":
-			{
-				//Remover
-				DALlocadora.updateAutomatico(connection, "unidade", 1, -1);
-				break;
-			}
-			
-			case "7":
-			{
-				//Adicionar
-				DALlocadora.updateAutomatico(connection, "unidade", 1, +1);
-				break;
-			}
-			
 			default:
 			{
 				System.out.println("");
@@ -154,7 +139,7 @@ public class printar
 		}
 	}
 	
-	public static void opcoesDentroDentroTabela(String opcao)
+	public static void opcoesDentroDentroTabela()
 	{
 		Scanner scanner = new Scanner(System.in);
 		
@@ -174,124 +159,124 @@ public class printar
 				System.out.println("7. Console");
 				System.out.println("8. Unidade");
 
-				String opcoes = scanner.nextLine(); // que é usado pra ler string
+				variaveis.opcoesComparativo = scanner.nextInt();
 				
-				switch(opcoes)
+				switch(variaveis.opcoesComparativo)
 				{
-					case "1":
+					case 1:
 					{
 						//Comparativo
-						if (opcao == "4")
+						if (variaveis.opcaoDentroTabela == 4)
 						{
 							DALlocadora.selectComparativo("id");
 						}
 						//InnerJoin
-						else if (opcao == "5")
+						else if (variaveis.opcaoDentroTabela == 5)
 						{
 							
 						}
 						break;
 					}
 					
-					case "2":
+					case 2:
 					{
 						//Comparativo
-						if (opcao == "4")
+						if (variaveis.opcaoDentroTabela == 4)
 						{
 							DALlocadora.selectComparativo("nome");
 						}
 						//InnerJoin
-						else if (opcao == "5")
+						else if (variaveis.opcaoDentroTabela == 5)
 						{
 							
 						}
 						break;
 					}
 					
-					case "3":
+					case 3:
 					{
 						//Comparativo
-						if (opcao == "4")
+						if (variaveis.opcaoDentroTabela == 4)
 						{
 							DALlocadora.selectComparativo("desenvolvedor");
 						}
 						//InnerJoin
-						else if (opcao == "5")
+						else if (variaveis.opcaoDentroTabela == 5)
 						{
 							
 						}
 						break;
 					}
 					
-					case "4":
+					case 4:
 					{
 						//Comparativo
-						if (opcao == "4")
+						if (variaveis.opcaoDentroTabela == 4)
 						{
 							DALlocadora.selectComparativo("distribuidora");
 						}
 						//InnerJoin
-						else if (opcao == "5")
+						else if (variaveis.opcaoDentroTabela == 5)
 						{
 							
 						}
 						break;
 					}
 					
-					case "5":
+					case 5:
 					{
 						//Comparativo
-						if (opcao == "4")
+						if (variaveis.opcaoDentroTabela == 4)
 						{
 							DALlocadora.selectComparativo("genero");
 						}
 						//InnerJoin
-						else if (opcao == "5")
+						else if (variaveis.opcaoDentroTabela == 5)
 						{
 							
 						}
 						break;
 					}
 					
-					case "6":
+					case 6:
 					{
 						//Comparativo
-						if (opcao == "4")
+						if (variaveis.opcaoDentroTabela == 4)
 						{
 							DALlocadora.selectComparativo("ano");
 						}
 						//InnerJoin
-						else if (opcao == "5")
+						else if (variaveis.opcaoDentroTabela == 5)
 						{
 							
 						}
 						break;
 					}
 					
-					case "7":
+					case 7:
 					{
 						//Comparativo
-						if (opcao == "4")
+						if (variaveis.opcaoDentroTabela == 4)
 						{
 							DALlocadora.selectComparativo("console");
 						}
 						//InnerJoin
-						else if (opcao == "5")
+						else if (variaveis.opcaoDentroTabela == 5)
 						{
 							
 						}
 						break;
 					}
 					
-					case "8":
+					case 8:
 					{
 						//Comparativo
-						if (opcao == "4")
+						if (variaveis.opcaoDentroTabela == 4)
 						{
 							DALlocadora.selectComparativo("unidade");
 						}
 						//InnerJoin
-						else if (opcao == "5")
+						else if (variaveis.opcaoDentroTabela == 5)
 						{
 							
 						}
@@ -301,20 +286,16 @@ public class printar
 					default:
 						break;
 				}
-				
-				System.out.println("Digite qualquer tecla para continuar");
-				String continuar = scanner.nextLine();
 			}
-			
-			
-			
 			default:
 				break;
 		}
 		
-		
+		if (variaveis.opcoesComparativo!=0)
+		{
+			System.out.println("Digite qualquer tecla para continuar");
+			scanner.nextLine();
+			scanner.nextLine();
+		}
 	}
-	
-
-	
 }

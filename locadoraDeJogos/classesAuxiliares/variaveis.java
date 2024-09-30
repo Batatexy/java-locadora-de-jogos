@@ -1,4 +1,4 @@
-package src;
+package classesAuxiliares;
 
 public class variaveis 
 {
@@ -8,10 +8,14 @@ public class variaveis
 	//Metodo main
 	public static boolean repetirTabela = true, repetirCodigo = true, opcaoSelectBoolean;
 	
-	public static String opcao;
+	//Escolher tabela
+	public static int opcaoTabela;
+	
+	//Opções de select comparativo
+	public static int opcoesComparativo=100;
+	
+	public static int opcaoDentroTabela;
 	
 	//Personalização do Print das Tabelas:
-	//public static String caracter = " │ ", caracterCenter = "│ ";
-	public static String caracterVertical = "│";
-	public static String linhaCima = "_", linhaBaixo = "‾";
+	public static String linha = "─", caracterVertical = "│";
 }

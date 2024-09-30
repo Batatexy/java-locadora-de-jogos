@@ -11,11 +11,9 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
+import classesAuxiliares.formatar;
+import classesAuxiliares.variaveis;
 import src.locadora;
-import src.tabela;
-import src.formatar;
-import src.verificar;
-import src.variaveis;
 
 public class DALlocadora 
 {
@@ -76,7 +74,7 @@ public class DALlocadora
            }
            
            //Guardar o tamanho de cada coluna em um Array
-           while (resultSet.next()) 
+    	   while (resultSet.next()) 
            {
                for (int i = 1; i <= columnCount; i++) 
                {
@@ -94,39 +92,51 @@ public class DALlocadora
                }
            }
            
-           int tamanhoLinha=-2;
            
-           //Definir tamanho da Linha superior e inferior da tabela:
-           for (int i = 1; i <= columnCount; i++) 
-           {
-        	   tamanhoLinha += tamanhoColunas[i] + 3;
-           }
+           
+           
            
            //Printar Linha Superior:
-           System.out.println(formatar.criarLinha(variaveis.linhaCima, tamanhoLinha));
-           
-           //Printar Cabeçalho:
-           for (int i = 1; i <= columnCount; i++) 
+           formatar.criarLinha(1, tamanhoColunas, columnCount);
+           resultSet = statement.executeQuery(sql);
+           if (resultSet.isBeforeFirst())
            {
-        	   System.out.print(formatar.gerarEspacos(nomeColunasArray[i], tamanhoColunas[i], "center"));
+	           //Printar Cabeçalho:
+	           for (int i = 1; i <= columnCount; i++) 
+	           {
+	        	   System.out.print(formatar.gerarEspacos(nomeColunasArray[i], tamanhoColunas[i], "center"));
+	        	   
+	           }
+	           System.out.println();
            }
-           System.out.println();
+           else
+           {
+        	   formatar.criarLinha(4, tamanhoColunas, columnCount);
+           }
+           
+           
+           //Printar Linha Superior em baixo do cabeçalho:
+           formatar.criarLinha(2, tamanhoColunas, columnCount);
            
            //Printar os Nomes dos itens da tabela:
+           
            resultSet = statement.executeQuery(sql);
-           while (resultSet.next()) 
+           if (resultSet.isBeforeFirst())
            {
-               for (int i = 1; i <= columnCount; i++) 
-               {
-            	   System.out.print(formatar.gerarEspacos(resultSet.getString(i), tamanhoColunas[i], "left"));
-               }
-               System.out.println();
+	           while (resultSet.next()) 
+	           {
+	               for (int i = 1; i <= columnCount; i++) 
+	               {
+	            	   
+	            	   System.out.print(formatar.gerarEspacos(resultSet.getString(i), tamanhoColunas[i], "left"));
+	            	   
+	               }
+	               System.out.println();
+	           }
            }
            
-
-           
-         //Printar Linha Inferior:
-           System.out.println(formatar.criarLinha(variaveis.linhaBaixo, tamanhoLinha));
+           //Printar Linha Inferior:
+           formatar.criarLinha(3, tamanhoColunas, columnCount);
            
            statement.close();
            resultSet.close();
@@ -189,6 +199,36 @@ public class DALlocadora
 	
 						break;
 					}
+					case "Clientes": 
+					{
+						String sql = "INSERT INTO clientes " +
+						"(id, cpf, nome, dataNascimento, telefone) " +
+						"VALUES (?, ?, ?, ?, ?)";
+						
+						tabela.clientes(connection, sql, id, false);
+	
+						break;
+					}
+					case "Funcionarios": 
+					{
+						String sql = "INSERT INTO funcionarios " +
+						"(id, cpf, nome, dataNascimento) " +
+						"VALUES (?, ?, ?, ?)";
+						
+						tabela.funcionarios(connection, sql, id, false);
+	
+						break;
+					}
+					case "Alugueis": 
+					{
+						String sql = "INSERT INTO alugueis " +
+						"(id, cliente, jogo, funcionario) " +
+						"VALUES (?, ?, ?, ?)";
+						
+						tabela.alugueis(connection, sql, id, false);
+	
+						break;
+					}
 					
 					default:
 						break;
@@ -225,6 +265,11 @@ public class DALlocadora
 			System.out.println("1. Alterar uma coluna de um dado em " + tabelaModificada);
 			System.out.println("2. ALterar todas as colunas de um dado em " + tabelaModificada);
 			int opcao = scanner.nextInt();
+			
+			if (opcao==0)
+			{
+				return;
+			}
 			
 			System.out.println("Digite o ID do " + tabelaModificada + " que deseja atualizar: ");
 			int id = scanner.nextInt();
@@ -312,6 +357,46 @@ public class DALlocadora
 		
 							break;
 						}
+						case "Clientes": 
+						{
+							String sql = "UPDATE clientes SET " +
+						
+									"id = ?, " +
+									"cpf = ?, " +
+									"nome = ?, " +
+									"dataNascimento = ?, " + 
+									"telefone = ? " +
+									"WHERE id = " + id;
+							
+							tabela.clientes(connection, sql, id, false);
+		
+							break;
+						}
+						case "Funcionarios": 
+						{
+							String sql = "UPDATE funcionarios SET " +
+									"id = ?, " +
+									"cpf = ?, " +
+									"nome = ?, " +
+									"dataNascimento = ?, " + 
+									"WHERE id = " + id;
+							
+							tabela.funcionarios(connection, sql, id, false);
+		
+							break;
+						}
+						case "Alugueis": 
+						{
+							String sql = "UPDATE alugueis SET " +
+									"cliente = ?, " +
+									"jogo = ?, " +
+									"funcionario = ?, " +
+									"WHERE id = " + id;
+							
+							tabela.alugueis(connection, sql, id, false);
+		
+							break;
+						}
 						
 						default:
 							break;
@@ -320,7 +405,6 @@ public class DALlocadora
 					}
 					
 				}
-				
 			}
 		}
 		catch (SQLException e) 
@@ -335,13 +419,13 @@ public class DALlocadora
 	}
 	
 	
-	public static void updateAutomatico(Connection connectionOriginal, String coluna, int id, int valor) 
+	public static void updateAutomaticoUnidadeJogos(int id, int valor)
 	{
 		PreparedStatement preparedStatement = null;
 		int soma = 0;
 		
 		//Buscar o id especifico em tabela
-		String sql = "SELECT * FROM " + locadora.tabelaAtual + " where id = " + id;
+		String sql = "SELECT * FROM jogos where id = " + id;
 		
 		try (Connection connection = DriverManager.getConnection(locadora.jdbcUrl);
 		Statement statement = connection.createStatement())
@@ -355,35 +439,39 @@ public class DALlocadora
 		    //Nome do item
 		    String nome = resultSet.getString(2);
 		    
+		    System.out.println(nome + ": " + numero + " unidades");
+		    
+		    verificar.fechar(resultSet);
+
+		    if (valor<0)
+		    {
+		    	if (numero<=0)
+			    {
+		    		System.out.println("Não há mais unidades de " + nome);
+			    	return;
+			    }
+		    }
+		    
 		    //Soma ou Subtração do valor original pelo valor inserido no metodo
 		    //Exemplo: 20 unidades - 1
 		    soma = numero + valor;
+		    
+		    sql = "UPDATE jogos SET unidade = ? WHERE id = ?";
+			
+			//Alteração de dados
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setInt(1, soma);
+			preparedStatement.setInt(2, id);
 		   
-		    verificar.fechar(resultSet);
-		   
-		    if (numero>0)
-		    {
-				sql = "UPDATE " + locadora.tabelaAtual + " SET " + coluna + " = ? WHERE id = ?";
-				
-				//Alteração de dados
-				preparedStatement = connection.prepareStatement(sql);
-				preparedStatement.setInt(1, soma);
-				preparedStatement.setInt(2, id);
-				
-				//agora, só falta executar a query sql
-				if (preparedStatement.executeUpdate() > 0)
-				{
-					System.out.println("Atualização efetuada com sucesso!");
-				}
-				else 
-				{
-					System.out.println("Nenhuma linha do BD foi afetada");
-				}
-		    }
-		    else
-		    {
-		    	System.out.println("Não há mais unidades de " + nome);
-		    }
+			//agora, só falta executar a query sql
+			if (preparedStatement.executeUpdate() > 0)
+			{
+				System.out.println("Atualização efetuada com sucesso!");
+			}
+			else 
+			{
+				System.out.println("Nenhuma linha do BD foi afetada");
+			}
         }
 		catch (Exception e)
         {
@@ -393,17 +481,14 @@ public class DALlocadora
 		{
 			verificar.fechar(preparedStatement);
 		}
-		
-		
 	}
 	
 	
 
 	//um método para deletar dados do BD
-	public static void deletarDados(Connection connection) 
+	public static void deletarDados(Connection connectionOriginal) 
 	{
 		Scanner scanner = new Scanner(System.in);
-		String sql = "DELETE FROM " + locadora.tabelaAtual + " WHERE id = ?";
 
 		System.out.println("\nInforme o ID que deseja deletar da tabela " + locadora.tabelaAtual + ": ");
 		int id = scanner.nextInt();
@@ -412,7 +497,7 @@ public class DALlocadora
 
 		try 
 		{
-			while (verificar.validarID(connection, id) == false && id != 0) 
+			while (verificar.validarID(connectionOriginal, id) == false && id != 0) 
 			{
 				System.out.println("Este ID não existe! Digite um ID existente:");
 				id = scanner.nextInt(); // assim, já retorna um int
@@ -431,7 +516,37 @@ public class DALlocadora
 				
 				if (resposta == numeroAleatorio) 
 				{
-					preparedStatement = connection.prepareStatement(sql);
+					//Caso delete um aluguel, se entende que uma unidade foi devolvida ao respectivo jogo:
+					if (locadora.tabelaAtual == "Alugueis")
+					{
+						try (Connection connection = DriverManager.getConnection(locadora.jdbcUrl);
+						Statement statement = connection.createStatement())
+				        {
+							String sql = "SELECT * FROM alugueis WHERE id = " + id;
+					
+				            //Executa a consulta
+						    ResultSet resultSet = statement.executeQuery(sql);
+						    
+						    //Valor do id do Jogo
+						    int jogoID = resultSet.getInt(3);
+						    
+						    verificar.fechar(resultSet);
+
+						    DALlocadora.updateAutomaticoUnidadeJogos(jogoID, 1);
+				        }
+						catch (Exception e)
+				        {
+				        	e.printStackTrace();
+				        }
+						finally
+						{
+							verificar.fechar(preparedStatement);
+						}
+					}
+					
+					String sql = "DELETE FROM " + locadora.tabelaAtual + " WHERE id = ?";
+					
+					preparedStatement = connectionOriginal.prepareStatement(sql);
 					preparedStatement.setInt(1, id);
 
 					if (preparedStatement.executeUpdate() > 0) 

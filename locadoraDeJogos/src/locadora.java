@@ -12,7 +12,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import classesAuxiliares.printar;
+import classesAuxiliares.variaveis;
 import src.data.DALlocadora;
+import src.data.verificar;
 
 public class locadora
 {
@@ -47,15 +50,17 @@ public class locadora
 			}
 			System.out.println("Fim do código");
 			
-			connection.close();
+			verificar.fechar(connection);
 		}
 		catch (SQLException e) 
 		{
 			e.printStackTrace();
+			verificar.fechar(connection);
 		}
 		catch (Exception e1) 
 		{
 			e1.printStackTrace();
+			verificar.fechar(connection);
 		}
 		finally
 		{
