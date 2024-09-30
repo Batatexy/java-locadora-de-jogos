@@ -44,12 +44,13 @@ public class tabela
 	
 			System.out.println("Digite o ano de publicacao do jogo: ");
 			int ano = scanner.nextInt();
+			
+			System.out.println("Digite a unidade do jogo: ");
+			int unidade = scanner.nextInt();
 	
 			System.out.println("Digite o console do jogo: ");
 			int console = scanner.nextInt();
 			
-			System.out.println("Digite a unidade do jogo: ");
-			int unidade = scanner.nextInt();
 			
 			// após, fazer a inicialização do objeto que permite criar querys com parâmetros
 			preparedStatement = connection.prepareStatement(sql);
@@ -61,8 +62,8 @@ public class tabela
 			preparedStatement.setString(4, distribuidora);
 			preparedStatement.setString(5, genero);
 			preparedStatement.setInt(6, ano);
-			preparedStatement.setInt(7, console);
-			preparedStatement.setInt(8, unidade);
+			preparedStatement.setInt(7, unidade);
+			preparedStatement.setInt(8, console);
 			
 			// agora, só falta executar a query sql
 			if (preparedStatement.executeUpdate() > 0) 
@@ -94,8 +95,6 @@ public class tabela
 			verificar.fechar(preparedStatement);
 		}
 	}
-	
-	
 	
 	public static void consoles(Connection connection, String sql, int id, boolean update)
 	{
@@ -187,36 +186,51 @@ public class tabela
 			{
 				System.out.println("Digite o novo id do cliente: ");
 				mudarID = scanner.nextInt(); // que é usado pra ler string
-	
-				while (!verificar.validarID(connection, id) && id != 0) 
+				
+				if (id == 0 || mudarID == 0)
 				{
-					System.out.println("Este ID não existe! Digite um ID existente:");
-					id = scanner.nextInt(); // assim, já retorna um int
+					return;
+				}
+	
+				while (verificar.validarID(connection, mudarID) && mudarID!=id) 
+				{
+					System.out.println("Este ID está sendo usado! Digite um ID válido:");
+					mudarID = scanner.nextInt(); // assim, já retorna um int
+					
+					if (mudarID==id)
+					{
+						break;
+					}
+					
+					if (id == 0 || mudarID == 0)
+					{
+						return;
+					}
 				}
 				scanner.nextLine();
 			}
 			
 			System.out.println("Digite o CPF do cliente: ");
-			int cpf = scanner.nextInt();
-	
+			String cpf = scanner.nextLine();
+				
 			System.out.println("Digite o nome do cliente: ");
 			String nome = scanner.nextLine();
 	
 			System.out.println("Digite a data de nascimento do cliente: ");
-			int dataNascimento = scanner.nextInt();
+			String dataNascimento = scanner.nextLine();
 	
 			System.out.println("Digite o telefone do cliente: ");
-			int telefone = scanner.nextInt();
+			String telefone = scanner.nextLine();
 	
 			// após, fazer a inicialização do objeto que permite criar querys com parâmetros
 			preparedStatement = connection.prepareStatement(sql);
 	
 			// por fim, fazer o preenchimento dos parâmetros
 			preparedStatement.setInt(1, mudarID);
-			preparedStatement.setInt(2, cpf);
+			preparedStatement.setString(2, cpf);
 			preparedStatement.setString(3, nome);
-			preparedStatement.setInt(4, dataNascimento);
-			preparedStatement.setInt(5, telefone);
+			preparedStatement.setString(4, dataNascimento);
+			preparedStatement.setString(5, telefone);
 			
 			// agora, só falta executar a query sql
 			if (preparedStatement.executeUpdate() > 0) 
@@ -264,16 +278,28 @@ public class tabela
 				System.out.println("Digite o novo id do funcionário: ");
 				mudarID = scanner.nextInt(); // que é usado pra ler string
 	
-				while (!verificar.validarID(connection, id) && id != 0) 
+				while (verificar.validarID(connection, id)) 
 				{
-					System.out.println("Este ID não existe! Digite um ID existente:");
-					id = scanner.nextInt(); // assim, já retorna um int
+					if (mudarID==id)
+					{
+						break;
+					}
+					
+					if (id == 0 || mudarID == 0)
+					{
+						return;
+					}
+					
+					System.out.println("Este ID está sendo usado! Digite um ID válido:");
+					mudarID = scanner.nextInt();
 				}
 				scanner.nextLine();
 			}
 			
 			System.out.println("Digite o CPF do funcionário: ");
 			int cpf = scanner.nextInt();
+			
+			scanner.nextLine();
 	
 			System.out.println("Digite o nome do funcionário: ");
 			String nome = scanner.nextLine();
@@ -336,10 +362,21 @@ public class tabela
 				System.out.println("Digite o novo id do aluguel: ");
 				mudarID = scanner.nextInt(); // que é usado pra ler string
 	
-				while (!verificar.validarID(connection, id) && id != 0) 
+				while (verificar.validarID(connection, id)) 
 				{
-					System.out.println("Este ID não existe! Digite um ID existente:");
-					id = scanner.nextInt(); // assim, já retorna um int
+					if (mudarID==id)
+					{
+						break;
+					}
+					
+					if (id == 0 || mudarID == 0)
+					{
+						return;
+					}
+					
+					System.out.println("Este ID está sendo usado! Digite um ID válido:");
+					System.out.println("ID: " + id + ", mudarID: " + mudarID);
+					mudarID = scanner.nextInt(); // assim, já retorna um int
 				}
 				scanner.nextLine();
 			}

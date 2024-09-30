@@ -4,6 +4,9 @@ public class formatar
 {
 	public static String texto;
 	
+	//Personalização do Print das Tabelas:
+	public static String caracterlinha = "─", caracterVertical = "│";
+	
 	public static String alterarNomes(String nomeColuna) 
 	{
  	   //Palavras com acento:
@@ -74,7 +77,7 @@ public class formatar
 				{
 					texto += " ";
 				}
-				texto += " " + variaveis.caracterVertical;
+				texto += " " + caracterVertical;
 				break;
 			}
 			
@@ -98,7 +101,7 @@ public class formatar
 				{
 					texto += " ";
 				}
-				texto += " " + variaveis.caracterVertical;
+				texto += " " + caracterVertical;
 				break;
 			}
 			
@@ -111,7 +114,7 @@ public class formatar
 					texto += " ";
 				}
 				
-				texto += nome + " " + variaveis.caracterVertical;
+				texto += nome + " " + caracterVertical;
 				break;
 			}
 			
@@ -126,7 +129,6 @@ public class formatar
 	public static void criarLinha(int posicao, int[] tamanhoColunas, int columnCount) 
 	{
 		String linha="";
-        int tamanhoLinha=-2;
         
         //Definir tamanho da Linha superior e inferior da tabela:
         for (int i = 1; i <= columnCount; i++)
@@ -136,7 +138,7 @@ public class formatar
     			if (posicao == 4)
     				linha += " ";
     			else
-    				linha += variaveis.linha;
+    				linha += caracterlinha;
     		}
     		
     		if (i == columnCount)
@@ -148,7 +150,7 @@ public class formatar
 				else if (posicao == 3)
 					linha+="┘";
 				else if (posicao == 4)
-					linha+=variaveis.caracterVertical;
+					linha+=caracterVertical;
     		}
     		else
     		{
@@ -159,17 +161,12 @@ public class formatar
 				else if (posicao == 3)
 					linha+="┴";
 				else if (posicao == 4)
-					linha+=variaveis.caracterVertical;
+					linha+=caracterVertical;
     		}
     		
         }
-
-        
         System.out.println(linha);
-        
-		
-
-		
 	}
 
+	//Verificar Fim
 }

@@ -72,7 +72,9 @@ public class verificar
 		return false;
 	}
 	
-	//Metodo que verifica se um ID existe
+	//Metodo que verifica se um ID existe e retorna um boolean
+	//True é porque existe o ID
+	//False é que não existe, está livre
 	public static boolean validarID(Connection connection, int id)
 	{
 		String verificador = "SELECT true FROM " + locadora.tabelaAtual + " WHERE id = " + id;
@@ -185,4 +187,5 @@ public class verificar
 	    }
 	}
 	
+	//Verificar Fim
 }

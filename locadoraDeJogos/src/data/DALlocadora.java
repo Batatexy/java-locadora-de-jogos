@@ -92,10 +92,6 @@ public class DALlocadora
                }
            }
            
-           
-           
-           
-           
            //Printar Linha Superior:
            formatar.criarLinha(1, tamanhoColunas, columnCount);
            resultSet = statement.executeQuery(sql);
@@ -146,7 +142,7 @@ public class DALlocadora
         	e.printStackTrace();
         }
 	}
-
+	
 	// um método para inserir dados no BD
 	public static void inserirDado(Connection connection) 
 	{
@@ -182,7 +178,7 @@ public class DALlocadora
 					{
 						// depois, é necessário fazer a definição da query sql de inserção de dados
 						String sql = "INSERT INTO jogos " + 
-						"(id, nome, desenvolvedor, distribuidora, genero, ano, console, unidade) " + 
+						"(id, nome, desenvolvedor, distribuidora, genero, ano, unidade, console) " + 
 						"VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 						
 						tabela.jogos(connection, sql, id, false);
@@ -291,21 +287,12 @@ public class DALlocadora
 					System.out.println("Digite o nome da coluna que deseja alterar: ");
 					String coluna = scanner.nextLine();
 					
-					//Digitalização do novo Valor
+					//Aqui não tem muito o que fazer, se o usuario digitar um valor que já existe ele
+					//printa um erro na tela
 					System.out.println("Digite o novo valor: ");
 					String valor = scanner.nextLine();
-
+					
 					String sql = "UPDATE " + locadora.tabelaAtual + " SET " + coluna + " = ? WHERE id = ?";
-
-					//Caso a coluna seja o Proprio ID, Verificar se já pertence a algum outro dado
-					if (valor == "id") 
-					{
-						if (verificar.validarID(connection, id)) 
-						{
-							System.out.println("Este ID já existe!");
-							return;
-						}
-					}
 					
 					//Alteração de dados
 					preparedStatement = connection.prepareStatement(sql);
@@ -328,7 +315,7 @@ public class DALlocadora
 					switch (locadora.tabelaAtual) 
 					{
 						case "Jogos": 
-						{					
+						{
 							String sql = "UPDATE jogos SET " +
 									"id = ?, " +
 									"nome = ?, " +
@@ -336,6 +323,7 @@ public class DALlocadora
 									"distribuidora = ?, " + 
 									"genero = ?, " +
 									"ano = ?, " +
+									"unidade = ?, " + 
 									"console = ? " + 
 									"WHERE id = " + id;
 							
@@ -368,7 +356,7 @@ public class DALlocadora
 									"telefone = ? " +
 									"WHERE id = " + id;
 							
-							tabela.clientes(connection, sql, id, false);
+							tabela.clientes(connection, sql, id, true);
 		
 							break;
 						}
@@ -381,7 +369,7 @@ public class DALlocadora
 									"dataNascimento = ?, " + 
 									"WHERE id = " + id;
 							
-							tabela.funcionarios(connection, sql, id, false);
+							tabela.funcionarios(connection, sql, id, true);
 		
 							break;
 						}
@@ -393,7 +381,7 @@ public class DALlocadora
 									"funcionario = ?, " +
 									"WHERE id = " + id;
 							
-							tabela.alugueis(connection, sql, id, false);
+							tabela.alugueis(connection, sql, id, true);
 		
 							break;
 						}
@@ -417,7 +405,6 @@ public class DALlocadora
 			verificar.fechar(preparedStatement);
 		}
 	}
-	
 	
 	public static void updateAutomaticoUnidadeJogos(int id, int valor)
 	{
@@ -483,8 +470,6 @@ public class DALlocadora
 		}
 	}
 	
-	
-
 	//um método para deletar dados do BD
 	public static void deletarDados(Connection connectionOriginal) 
 	{
@@ -574,4 +559,6 @@ public class DALlocadora
 		}
 	}
 
+	
+	//DALLocadora Fim
 }

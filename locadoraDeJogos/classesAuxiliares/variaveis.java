@@ -9,13 +9,8 @@ public class variaveis
 	public static boolean repetirTabela = true, repetirCodigo = true, opcaoSelectBoolean;
 	
 	//Escolher tabela
-	public static int opcaoTabela;
+	public static int opcaoTabela, opcaoDentroTabela;
 	
 	//Opções de select comparativo
-	public static int opcoesComparativo=100;
-	
-	public static int opcaoDentroTabela;
-	
-	//Personalização do Print das Tabelas:
-	public static String linha = "─", caracterVertical = "│";
+	public static int opcaoColuna=1000;
 }
