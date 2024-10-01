@@ -2,11 +2,11 @@ package classesAuxiliares;
 
 public class variaveis 
 {
-	//Tamanho máximo que printa as colunas de uma tabela
-	public static int valor = 100;
-	
 	//Metodo main
 	public static boolean repetirTabela = true, repetirCodigo = true, opcaoSelectBoolean;
+	
+	//Tamanho máximo que printa as colunas de uma tabela
+	public static int quantidadeColunas = 100;
 	
 	//Escolher tabela
 	public static int opcaoTabela, opcaoDentroTabela;

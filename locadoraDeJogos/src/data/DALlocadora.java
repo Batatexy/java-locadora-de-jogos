@@ -27,16 +27,6 @@ public class DALlocadora
 		select(sql);
 	}
 	
-	public static void selectInnerJoin(String coluna) 
-	{
-		Scanner scanner = new Scanner(System.in);
-		System.out.println("Digite o valor: ");
-		String valor = scanner.nextLine();
-		
-		String sql = "SELECT * FROM ";
-		select(sql);
-	}
-
 	public static void selectScanner() 
 	{
 		Scanner scanner = new Scanner(System.in);
@@ -45,7 +35,7 @@ public class DALlocadora
 
 		select(sql);
 	}
-
+	
 	public static void select(String sql)
 	{
 		try (Connection connection = DriverManager.getConnection(locadora.jdbcUrl);
@@ -57,8 +47,8 @@ public class DALlocadora
            //Obtém os metadados da quantidade de colunas da tabela
            int columnCount = resultSet.getMetaData().getColumnCount();
            
-           int[] tamanhoColunas = new int[variaveis.valor];
-           String[] nomeColunasArray = new String[variaveis.valor];
+           int[] tamanhoColunas = new int[variaveis.quantidadeColunas];
+           String[] nomeColunasArray = new String[variaveis.quantidadeColunas];
            
            //Resetar os valores da Arraylist
            for (int i = 1; i < columnCount+5; i++) 
@@ -69,7 +59,7 @@ public class DALlocadora
         	   }
         	   else
         	   {
-        		   tamanhoColunas[i] = 10;
+        		   tamanhoColunas[i] = 12;
         	   }
            }
            
@@ -110,12 +100,10 @@ public class DALlocadora
         	   formatar.criarLinha(4, tamanhoColunas, columnCount);
            }
            
-           
            //Printar Linha Superior em baixo do cabeçalho:
            formatar.criarLinha(2, tamanhoColunas, columnCount);
            
            //Printar os Nomes dos itens da tabela:
-           
            resultSet = statement.executeQuery(sql);
            if (resultSet.isBeforeFirst())
            {
@@ -123,9 +111,7 @@ public class DALlocadora
 	           {
 	               for (int i = 1; i <= columnCount; i++) 
 	               {
-	            	   
 	            	   System.out.print(formatar.gerarEspacos(resultSet.getString(i), tamanhoColunas[i], "left"));
-	            	   
 	               }
 	               System.out.println();
 	           }
@@ -218,7 +204,7 @@ public class DALlocadora
 					case "Alugueis": 
 					{
 						String sql = "INSERT INTO alugueis " +
-						"(id, cliente, jogo, funcionario) " +
+						"(id, clienteID, jogoID, funcionarioID) " +
 						"VALUES (?, ?, ?, ?)";
 						
 						tabela.alugueis(connection, sql, id, false);
@@ -240,10 +226,6 @@ public class DALlocadora
 		{
 			System.out.println("Erro genérico: " + e1.getMessage() + "/n");
 		}
-		finally
-		{
-			
-		}
 	}
 	
 	// um método para editar dados do BD
@@ -257,6 +239,10 @@ public class DALlocadora
 			
 			// Remover o s do final dos nomes das tabelas
 			String tabelaModificada = locadora.tabelaAtual.substring(0, locadora.tabelaAtual.length() - 1);
+			
+			if (locadora.tabelaAtual == "Alugueis")
+				tabelaModificada="aluguel";
+			
 			System.out.println("Escolha uma das opções abaixo:");
 			System.out.println("1. Alterar uma coluna de um dado em " + tabelaModificada);
 			System.out.println("2. ALterar todas as colunas de um dado em " + tabelaModificada);
@@ -279,7 +265,7 @@ public class DALlocadora
 
 			scanner.nextLine();
 
-			if (id != 0) 
+			if (id != 0)
 			{
 				if (opcao == 1)
 				{
@@ -299,15 +285,7 @@ public class DALlocadora
 					preparedStatement.setString(1, valor);
 					preparedStatement.setInt(2, id);
 					
-					//agora, só falta executar a query sql
-					if (preparedStatement.executeUpdate() > 0) 
-					{
-						System.out.println("Atualização efetuada com sucesso!");
-					}
-					else 
-					{
-						System.out.println("Nenhuma linha do BD foi afetada");
-					}
+					tabela.executarUpdate(preparedStatement, true);
 				}
 				else if (opcao == 2)
 				{
@@ -366,7 +344,7 @@ public class DALlocadora
 									"id = ?, " +
 									"cpf = ?, " +
 									"nome = ?, " +
-									"dataNascimento = ?, " + 
+									"dataNascimento = ? " + 
 									"WHERE id = " + id;
 							
 							tabela.funcionarios(connection, sql, id, true);
@@ -376,9 +354,10 @@ public class DALlocadora
 						case "Alugueis": 
 						{
 							String sql = "UPDATE alugueis SET " +
-									"cliente = ?, " +
-									"jogo = ?, " +
-									"funcionario = ?, " +
+									"id = ?, " +
+									"clienteID = ?, " +
+									"jogoID = ?, " +
+									"funcionarioID = ? " +
 									"WHERE id = " + id;
 							
 							tabela.alugueis(connection, sql, id, true);
@@ -388,8 +367,6 @@ public class DALlocadora
 						
 						default:
 							break;
-						
-						
 					}
 					
 				}
@@ -426,8 +403,6 @@ public class DALlocadora
 		    //Nome do item
 		    String nome = resultSet.getString(2);
 		    
-		    System.out.println(nome + ": " + numero + " unidades");
-		    
 		    verificar.fechar(resultSet);
 
 		    if (valor<0)
@@ -443,6 +418,9 @@ public class DALlocadora
 		    //Exemplo: 20 unidades - 1
 		    soma = numero + valor;
 		    
+		    //Verificar quantas unidades do jogo tem:
+		    System.out.println(nome + ": de " + numero + " unidades foi para: " + soma);
+		    
 		    sql = "UPDATE jogos SET unidade = ? WHERE id = ?";
 			
 			//Alteração de dados
@@ -450,15 +428,7 @@ public class DALlocadora
 			preparedStatement.setInt(1, soma);
 			preparedStatement.setInt(2, id);
 		   
-			//agora, só falta executar a query sql
-			if (preparedStatement.executeUpdate() > 0)
-			{
-				System.out.println("Atualização efetuada com sucesso!");
-			}
-			else 
-			{
-				System.out.println("Nenhuma linha do BD foi afetada");
-			}
+			tabela.executarUpdate(preparedStatement, true);
         }
 		catch (Exception e)
         {
@@ -558,7 +528,6 @@ public class DALlocadora
 			verificar.fechar(preparedStatement);
 		}
 	}
-
 	
 	//DALLocadora Fim
 }

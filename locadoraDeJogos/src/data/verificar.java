@@ -13,7 +13,7 @@ import src.locadora;
 
 public class verificar 
 {
-	//int idJogos
+	//verifica o tamanho dos espaços necessário para as colunas da tabelas
 	public static int tamanho(String nome, String nomeColuna, int tamanho)
 	{
 		int intNome = nome.length();
@@ -28,53 +28,9 @@ public class verificar
 		return tamanho;
 	}
 	
-	//Metodo que verifica se um ID existe
-	public static boolean validarUnidadeJogos(int id)
-	{
-		PreparedStatement preparedStatement = null;
-		int soma = 0;
-		
-		//Buscar o id especifico em tabela
-		String sql = "SELECT * FROM jogos where id = " + id;
-		
-		try (Connection connection = DriverManager.getConnection(locadora.jdbcUrl);
-		Statement statement = connection.createStatement())
-        {
-            //Executa a consulta
-		    ResultSet resultSet = statement.executeQuery(sql);
-		    
-		    //Valor de unidades:
-		    int numero = resultSet.getInt(7);
-		    
-		    //Nome do item
-		    String nome = resultSet.getString(2);
-		    
-		    if (numero<=0)
-		    {
-		    	System.out.println("Não há mais unidades de " + nome);
-		    	verificar.fechar(resultSet);
-		    	return false;
-		    }
-		    else
-		    {
-		    	verificar.fechar(resultSet);
-		    	return true;
-		    }
-        }
-		catch (Exception e)
-        {
-        	e.printStackTrace();
-        }
-		finally
-		{
-			verificar.fechar(preparedStatement);
-		}
-		return false;
-	}
-	
 	//Metodo que verifica se um ID existe e retorna um boolean
 	//True é porque existe o ID
-	//False é que não existe, está livre
+	//False é porque não existe, o ID está livre
 	public static boolean validarID(Connection connection, int id)
 	{
 		String verificador = "SELECT true FROM " + locadora.tabelaAtual + " WHERE id = " + id;
@@ -127,6 +83,51 @@ public class verificar
 		System.out.println("IDs Livres: " + idModificado);
 	}
 	
+	//Metodo que verifica se um determinado jogo há unidades para alugar
+	public static boolean validarUnidadeJogos(int id)
+	{
+		PreparedStatement preparedStatement = null;
+		int soma = 0;
+		
+		//Buscar o id especifico em tabela
+		String sql = "SELECT * FROM jogos where id = " + id;
+		
+		try (Connection connection = DriverManager.getConnection(locadora.jdbcUrl);
+		Statement statement = connection.createStatement())
+        {
+            //Executa a consulta
+		    ResultSet resultSet = statement.executeQuery(sql);
+		    
+		    //Valor de unidades:
+		    int numero = resultSet.getInt(7);
+		    
+		    //Nome do item
+		    String nome = resultSet.getString(2);
+		    
+		    if (numero<=0)
+		    {
+		    	System.out.println("Não há mais unidades de " + nome);
+		    	verificar.fechar(resultSet);
+		    	return false;
+		    }
+		    else
+		    {
+		    	verificar.fechar(resultSet);
+		    	return true;
+		    }
+        }
+		catch (Exception e)
+        {
+        	e.printStackTrace();
+        }
+		finally
+		{
+			verificar.fechar(preparedStatement);
+		}
+		return false;
+	}
+	
+	//Métodos para fechar reusltsets, preparedStatements e o próprio connection
 	public static void fechar(Connection connection)
 	{
 	    if (connection != null) 

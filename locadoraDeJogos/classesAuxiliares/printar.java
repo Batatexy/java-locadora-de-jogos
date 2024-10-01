@@ -89,7 +89,9 @@ public class printar
 		
 		//Select Comparativo, não sei que nome devo colocar
 		System.out.println("4. Consultar Tabela Por Valor ");
-		System.out.println("5. Consulta InnerJoin");
+		
+		if (locadora.tabelaAtual == "Alugueis")
+			System.out.println("5. Verificar clientes");
 		
 		Scanner scanner = new Scanner(System.in);
 		variaveis.opcaoDentroTabela = scanner.nextInt(); // que é usado pra ler string
@@ -132,10 +134,25 @@ public class printar
 			
 			case 5:
 			{
-				while (variaveis.opcaoColuna!=0)
-					opcoesDentroDentroTabela();
-				
-				variaveis.opcaoColuna=1000;
+				if (locadora.tabelaAtual == "Alugueis")
+				{
+					String sql = "select clientes.nome as \"Nome do Cliente\", jogos.nome as \"Jogo alugado\", " +
+							"funcionarios.nome as \"Funcionário Locatário\" " +
+							"from alugueis " +
+							"join clientes on alugueis.clienteID = clientes.id " +
+							"join jogos on alugueis.jogoID = jogos.id " +
+							"join funcionarios on alugueis.funcionarioID = funcionarios.id";
+					DALlocadora.select(sql);
+					
+					System.out.println("Digite qualquer tecla para continuar");
+					scanner.nextLine();
+					
+					variaveis.opcaoColuna=1000;
+				}
+				else
+				{
+					variaveis.repetirTabela=false;
+				}
 				break;
 			}
 			default:
@@ -170,11 +187,6 @@ public class printar
 					System.out.println("7. Unidade");
 					System.out.println("8. Console");
 				}
-				//Opções de escolha para o select InnerJoin
-				else if (variaveis.opcaoDentroTabela == 5)
-				{
-					
-				}
 
 				variaveis.opcaoColuna = scanner.nextInt();
 				scanner.nextLine();
@@ -183,49 +195,49 @@ public class printar
 				{
 					case 1:
 					{
-						verificarSelect("id");
+						DALlocadora.selectComparativo("id");
 						break;
 					}
 					
 					case 2:
 					{
-						verificarSelect("nome");
+						DALlocadora.selectComparativo("nome");
 						break;
 					}
 					
 					case 3:
 					{
-						verificarSelect("desenvolvedor");
+						DALlocadora.selectComparativo("desenvolvedor");
 						break;
 					}
 					
 					case 4:
 					{
-						verificarSelect("distribuidora");
+						DALlocadora.selectComparativo("distribuidora");
 						break;
 					}
 					
 					case 5:
 					{
-						verificarSelect("genero");
+						DALlocadora.selectComparativo("genero");
 						break;
 					}
 					
 					case 6:
 					{
-						verificarSelect("ano");
+						DALlocadora.selectComparativo("ano");
 						break;
 					}
 					
 					case 7:
 					{
-						verificarSelect("unidade");
+						DALlocadora.selectComparativo("unidade");
 						break;
 					}
 					
 					case 8:
 					{
-						verificarSelect("console");
+						DALlocadora.selectComparativo("console");
 						break;
 					}
 					
@@ -235,8 +247,6 @@ public class printar
 				
 				break;
 			}
-			
-			
 			
 			case "Consoles":
 			{
@@ -251,11 +261,6 @@ public class printar
 					System.out.println("4. Geração");
 					System.out.println("5. Ano de Lançamento");
 				}
-				//Opções de escolha para o select InnerJoin
-				else if (variaveis.opcaoDentroTabela == 5)
-				{
-					
-				}
 
 				variaveis.opcaoColuna = scanner.nextInt();
 				scanner.nextLine();
@@ -264,31 +269,31 @@ public class printar
 				{
 					case 1:
 					{
-						verificarSelect("id");
+						DALlocadora.selectComparativo("id");
 						break;
 					}
 					
 					case 2:
 					{
-						verificarSelect("nome");
+						DALlocadora.selectComparativo("nome");
 						break;
 					}
 					
 					case 3:
 					{
-						verificarSelect("fabricante");
+						DALlocadora.selectComparativo("fabricante");
 						break;
 					}
 					
 					case 4:
 					{
-						verificarSelect("geracao");
+						DALlocadora.selectComparativo("geracao");
 						break;
 					}
 					
 					case 5:
 					{
-						verificarSelect("ano");
+						DALlocadora.selectComparativo("ano");
 						break;
 					}
 					
@@ -298,13 +303,6 @@ public class printar
 				
 				break;
 			}
-			
-			
-			
-			
-			
-			
-			
 			
 			case "Clientes":
 			{
@@ -319,12 +317,7 @@ public class printar
 					System.out.println("4. Data de Nascimento");
 					System.out.println("5. Telefone");
 				}
-				//Opções de escolha para o select InnerJoin
-				else if (variaveis.opcaoDentroTabela == 5)
-				{
-					
-				}
-
+				
 				variaveis.opcaoColuna = scanner.nextInt();
 				scanner.nextLine();
 				
@@ -332,31 +325,31 @@ public class printar
 				{
 					case 1:
 					{
-						verificarSelect("id");
+						DALlocadora.selectComparativo("id");
 						break;
 					}
 					
 					case 2:
 					{
-						verificarSelect("cpf");
+						DALlocadora.selectComparativo("cpf");
 						break;
 					}
 					
 					case 3:
 					{
-						verificarSelect("nome");
+						DALlocadora.selectComparativo("nome");
 						break;
 					}
 					
 					case 4:
 					{
-						verificarSelect("dataNascimento");
+						DALlocadora.selectComparativo("dataNascimento");
 						break;
 					}
 					
 					case 5:
 					{
-						verificarSelect("telefone");
+						DALlocadora.selectComparativo("telefone");
 						break;
 					}
 					
@@ -366,13 +359,6 @@ public class printar
 				
 				break;
 			}
-			
-			
-			
-			
-			
-			
-			
 			
 			case "Funcionarios":
 			{
@@ -386,11 +372,6 @@ public class printar
 					System.out.println("3. Nome");
 					System.out.println("4. Data de Nascimento");
 				}
-				//Opções de escolha para o select InnerJoin
-				else if (variaveis.opcaoDentroTabela == 5)
-				{
-					
-				}
 				
 				variaveis.opcaoColuna = scanner.nextInt();
 				scanner.nextLine();
@@ -399,25 +380,25 @@ public class printar
 				{
 					case 1:
 					{
-						verificarSelect("id");
+						DALlocadora.selectComparativo("id");
 						break;
 					}
 					
 					case 2:
 					{
-						verificarSelect("cpf");
+						DALlocadora.selectComparativo("cpf");
 						break;
 					}
 					
 					case 3:
 					{
-						verificarSelect("nome");
+						DALlocadora.selectComparativo("nome");
 						break;
 					}
 					
 					case 4:
 					{
-						verificarSelect("dataNascimento");
+						DALlocadora.selectComparativo("dataNascimento");
 						break;
 					}
 					
@@ -427,10 +408,6 @@ public class printar
 				
 				break;
 			}
-			
-			
-			
-			
 			
 			case "Alugueis":
 			{
@@ -444,11 +421,6 @@ public class printar
 					System.out.println("3. Jogo");
 					System.out.println("4. Funcionário");
 				}
-				//Opções de escolha para o select InnerJoin
-				else if (variaveis.opcaoDentroTabela == 5)
-				{
-					
-				}
 
 				variaveis.opcaoColuna = scanner.nextInt();
 				scanner.nextLine();
@@ -457,25 +429,25 @@ public class printar
 				{
 					case 1:
 					{
-						verificarSelect("id");
+						DALlocadora.selectComparativo("id");
 						break;
 					}
 					
 					case 2:
 					{
-						verificarSelect("cliente");
+						DALlocadora.selectComparativo("clienteID");
 						break;
 					}
 					
 					case 3:
 					{
-						verificarSelect("jogo");
+						DALlocadora.selectComparativo("jogoID");
 						break;
 					}
 					
 					case 4:
 					{
-						verificarSelect("funcionario");
+						DALlocadora.selectComparativo("funcionarioID");
 						break;
 					}
 					
@@ -486,16 +458,6 @@ public class printar
 				break;
 			}
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 			default:
 				break;
 		}
@@ -505,27 +467,7 @@ public class printar
 			System.out.println("Digite qualquer tecla para continuar");
 			scanner.nextLine();
 		}
-		else
-		{
-			
-		}
 	}
 	
-	
-	
-	public static void verificarSelect(String coluna)
-	{
-		//Comparativo
-		if (variaveis.opcaoDentroTabela == 4)
-		{
-			DALlocadora.selectComparativo(coluna);
-		}
-		//InnerJoin
-		else if (variaveis.opcaoDentroTabela == 5)
-		{
-			
-		}
-	}
-
 	//Printar fim
 }

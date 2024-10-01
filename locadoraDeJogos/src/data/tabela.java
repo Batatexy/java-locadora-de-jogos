@@ -51,7 +51,6 @@ public class tabela
 			System.out.println("Digite o console do jogo: ");
 			int console = scanner.nextInt();
 			
-			
 			// após, fazer a inicialização do objeto que permite criar querys com parâmetros
 			preparedStatement = connection.prepareStatement(sql);
 	
@@ -65,22 +64,7 @@ public class tabela
 			preparedStatement.setInt(7, unidade);
 			preparedStatement.setInt(8, console);
 			
-			// agora, só falta executar a query sql
-			if (preparedStatement.executeUpdate() > 0) 
-			{
-				if (update)
-				{
-					System.out.println("Atualização efetuada com sucesso!");
-				}
-				else
-				{
-					System.out.println("Inserção efetuada com sucesso!");
-				}
-			}
-			else 
-			{
-				System.out.println("Nenhuma linha do BD foi afetada");
-			}
+			executarUpdate(preparedStatement, update);
 		}
 		catch (SQLException e) 
 		{
@@ -141,22 +125,7 @@ public class tabela
 			preparedStatement.setInt(4, geracao);
 			preparedStatement.setInt(5, ano);
 			
-			// agora, só falta executar a query sql
-			if (preparedStatement.executeUpdate() > 0) 
-			{
-				if (update)
-				{
-					System.out.println("Atualização efetuada com sucesso!");
-				}
-				else
-				{
-					System.out.println("Inserção efetuada com sucesso!");
-				}
-			} 
-			else 
-			{
-				System.out.println("Nenhuma linha do BD foi afetada");
-			}
+			executarUpdate(preparedStatement, update);
 		}
 		catch (SQLException e) 
 		{
@@ -232,22 +201,7 @@ public class tabela
 			preparedStatement.setString(4, dataNascimento);
 			preparedStatement.setString(5, telefone);
 			
-			// agora, só falta executar a query sql
-			if (preparedStatement.executeUpdate() > 0) 
-			{
-				if (update)
-				{
-					System.out.println("Atualização efetuada com sucesso!");
-				}
-				else
-				{
-					System.out.println("Inserção efetuada com sucesso!");
-				}
-			} 
-			else 
-			{
-				System.out.println("Nenhuma linha do BD foi afetada");
-			}
+			executarUpdate(preparedStatement, update);
 		}
 		catch (SQLException e) 
 		{
@@ -297,41 +251,24 @@ public class tabela
 			}
 			
 			System.out.println("Digite o CPF do funcionário: ");
-			int cpf = scanner.nextInt();
-			
-			scanner.nextLine();
-	
+			String cpf = scanner.nextLine();
+				
 			System.out.println("Digite o nome do funcionário: ");
 			String nome = scanner.nextLine();
 	
 			System.out.println("Digite a data de nascimento do funcionário: ");
-			int dataNascimento = scanner.nextInt();
+			String dataNascimento = scanner.nextLine();
 	
 			// após, fazer a inicialização do objeto que permite criar querys com parâmetros
 			preparedStatement = connection.prepareStatement(sql);
 	
 			// por fim, fazer o preenchimento dos parâmetros
 			preparedStatement.setInt(1, mudarID);
-			preparedStatement.setInt(2, cpf);
+			preparedStatement.setString(2, cpf);
 			preparedStatement.setString(3, nome);
-			preparedStatement.setInt(4, dataNascimento);
+			preparedStatement.setString(4, dataNascimento);
 			
-			// agora, só falta executar a query sql
-			if (preparedStatement.executeUpdate() > 0) 
-			{
-				if (update)
-				{
-					System.out.println("Atualização efetuada com sucesso!");
-				}
-				else
-				{
-					System.out.println("Inserção efetuada com sucesso!");
-				}
-			} 
-			else 
-			{
-				System.out.println("Nenhuma linha do BD foi afetada");
-			}
+			executarUpdate(preparedStatement, update);
 		}
 		catch (SQLException e) 
 		{
@@ -411,27 +348,8 @@ public class tabela
 				//Remover
 				DALlocadora.updateAutomaticoUnidadeJogos(jogoID, -1);
 				
-				// agora, só falta executar a query sql
-				if (preparedStatement.executeUpdate() > 0) 
-				{
-					if (update)
-					{
-						System.out.println("Atualização efetuada com sucesso!");
-					}
-					else
-					{
-						System.out.println("Inserção efetuada com sucesso!");
-					}
-				} 
-				else 
-				{
-					System.out.println("Nenhuma linha do BD foi afetada");
-				}
+				executarUpdate(preparedStatement, update);
 			}
-			
-			
-			
-			
 		}
 		catch (SQLException e) 
 		{
@@ -443,6 +361,34 @@ public class tabela
 		}
 		finally
 		{
+			verificar.fechar(preparedStatement);
+		}
+	}
+	
+	public static void executarUpdate(PreparedStatement preparedStatement, boolean update)
+	{
+		// agora, só falta executar a query sql, método para adicionar ou atualizar dados
+		try 
+		{
+			if (preparedStatement.executeUpdate() > 0) 
+			{
+				if (update)
+				{
+					System.out.println("Atualização efetuada com sucesso!");
+				}
+				else
+				{
+					System.out.println("Inserção efetuada com sucesso!");
+				}
+			} 
+			else 
+			{
+				System.out.println("Nenhuma linha do BD foi afetada");
+			}
+		} 
+		catch (SQLException e) 
+		{
+			e.printStackTrace();
 			verificar.fechar(preparedStatement);
 		}
 	}
